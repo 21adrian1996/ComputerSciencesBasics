@@ -1,10 +1,10 @@
-all: template
+all: {SCRIPTNAME}
 
 clean:
 	rm *.o *.lst
 
-template: template.o
-	ld -o template template.o
+{SCRIPTNAME}: {SCRIPTNAME}.o
+	ld -o {SCRIPTNAME} {SCRIPTNAME}.o
 
-template.o: template.asm
-	nasm -f elf64 -g -F dwarf template.asm -l template.lst
+{SCRIPTNAME}.o: {SCRIPTNAME}.asm
+	nasm -f elf64 -g -F dwarf {SCRIPTNAME}.asm -l {SCRIPTNAME}.lst

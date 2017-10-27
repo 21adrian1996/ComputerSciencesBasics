@@ -1,15 +1,24 @@
-section .data
+; Source name 	  : {SCRIPTNAME}.asm
+; Executable name : {SCRIPTNAME}
+; Version	  : 1.0
+; Created date	  : {DATE}
+; Last update	  : {DATE}
+; Author:	  : {AUTHOR}
+; Description	  : 
 
-section .bss
+section .data			; declaring initialized data or constants
 
-section .text
-	global _start
+section .bss			; declaring variables here
 
-_start:
-	
+section .text			; actual code section
+	global _start 		; must be declared for linker
+
+_start:				;tells linker entry point
+	; your code 
+	; goes here
 
 endScript:
-	mov rax,1 ; Code for exit syscall
-	mov rbx,0 ; Return a code of zero
-	int 80H	  ; Make kernel call
+	mov rax,1 		; code for exit syscall
+	mov rbx,0 		; return a code of zero
+	int 80H	  		; make kernel call
 	
