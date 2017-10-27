@@ -1,19 +1,15 @@
 section .data
-	highest dd 10
+
+section .bss
+
 section .text
 	global _start
 
 _start:
-	mov eax,0
-sumUp:
-	cmp eax,[highest]
-	ja endSum
-	add ebx,eax
-	inc eax
-	jmp sumUp
+	
 
-endSum:
-	mov eax,1
-	mov ebx,0
-	int 80H
+endScript:
+	mov rax,1 ; Code for exit syscall
+	mov rbx,0 ; Return a code of zero
+	int 80H	  ; Make kernel call
 	
