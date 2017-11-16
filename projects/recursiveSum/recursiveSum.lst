@@ -1,0 +1,44 @@
+     1                                  ; Source name 	  : recursiveSum.asm
+     2                                  ; Executable name : recursiveSum
+     3                                  ; Version	  : 1.0
+     4                                  ; Created date	  : 2017-11-07 18:53:08
+     5                                  ; Last update	  : 2017-11-07 18:53:08
+     6                                  ; Author:	  : adrian
+     7                                  ; Description	  : 
+     8                                  
+     9                                  section .data			; declaring initialized data or constants
+    10                                  
+    11                                  section .bss			; declaring variables here
+    12                                  
+    13                                  section .text			; actual code section
+    14                                  	global _start 		; must be declared for linker
+    15                                  
+    16                                  ;IN ax = n
+    17                                  ;OUT dx = the sum(n)
+    18                                  recSum:
+    19 00000000 50                      	push rax
+    20 00000001 6631D2                  	xor dx,dx
+    21 00000004 6683F800                	cmp ax, 0
+    22 00000008 7417                    	je done
+    23 0000000A E801000000              	call doSum
+    24 0000000F C3                      ret
+    25                                  doSum:
+    26 00000010 6683F800                	cmp ax, 0
+    27 00000014 740B                    	je done
+    28 00000016 6601C2                  	add dx,ax
+    29 00000019 66FFC8                  	dec ax
+    30 0000001C E8EFFFFFFF              	call doSum
+    31                                  done:
+    32 00000021 58                      	pop rax
+    33 00000022 C3                      ret
+    34                                  
+    35                                  _start:				;tells linker entry point
+    36 00000023 66B80500                	mov ax,5 
+    37 00000027 E8D4FFFFFF              	call recSum
+    38 0000002C EB00                    	jmp endScript
+    39                                  
+    40                                  endScript:
+    41 0000002E B801000000              	mov rax,1 		; code for exit syscall
+    42 00000033 BB00000000              	mov rbx,0 		; return a code of zero
+    43 00000038 CD80                    	int 80H	  		; make kernel call
+    44                                  	

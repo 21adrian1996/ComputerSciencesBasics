@@ -1,0 +1,73 @@
+     1                                  ; Source name 	  : binominals.asm
+     2                                  ; Executable name : binominals
+     3                                  ; Version	  : 1.0
+     4                                  ; Created date	  : 2017-11-07 19:23:17
+     5                                  ; Last update	  : 2017-11-07 19:23:17
+     6                                  ; Author:	  : adrian
+     7                                  ; Description	  : 
+     8                                  
+     9                                  section .data			; declaring initialized data or constants
+    10                                  
+    11                                  section .bss			; declaring variables here
+    12                                  
+    13                                  section .text			; actual code section
+    14                                  	global _start 		; must be declared for linker
+    15                                  
+    16                                  ;IN bx = n
+    17                                  ;OUT dx = n!
+    18                                  recFac:
+    19 00000000 50                              push rax
+    20 00000001 53                      	push rbx
+    21 00000002 66B80100                	mov ax, 1
+    22 00000006 6683FB00                        cmp bx, 0
+    23 0000000A 7418                            je doneFac
+    24 0000000C E801000000                      call doFac
+    25 00000011 C3                      ret
+    26                                  doFac:
+    27 00000012 6683FB00                        cmp bx, 0
+    28 00000016 740C                            je doneFac
+    29 00000018 66F7E3                          mul bx
+    30 0000001B 66FFCB                          dec bx
+    31 0000001E E8EFFFFFFF                      call doFac
+    32 00000023 C3                      ret
+    33                                  doneFac:
+    34 00000024 6689C2                  	mov dx,ax
+    35 00000027 5B                      	pop rbx
+    36 00000028 58                      	pop rax
+    37 00000029 C3                      ret
+    38                                  
+    39                                  ; IN ax = n
+    40                                  ; IN bx = k
+    41                                  ; OUT dx = (n über k) 
+    42                                  doBinominal:
+    43 0000002A 51                      	push rcx 		; store rcx in stack
+    44 0000002B 50                      	push rax		; store rax in stack
+    45 0000002C E8CFFFFFFF              	call recFac 		; get k! in dx
+    46 00000031 6689D1                  	mov cx, dx		; store k! to cx
+    47 00000034 6629D8                  	sub ax, bx		; store n-k into ax
+    48 00000037 6689C3                  	mov bx, ax		; store n-k to bx, cause this is the input for recFac
+    49 0000003A E8C1FFFFFF              	call recFac		; get (n-k)! into dx 	
+    50 0000003F 6689D0                  	mov ax, dx		; store (n-k)! into ax
+    51 00000042 6631D2                  	xor dx, dx		; clear dx for next multiplication
+    52 00000045 66F7E1                  	mul cx			; calc (n-k)! * k!
+    53 00000048 6689C1                  	mov cx, ax		; store (n-k)! * k! in cx
+    54 0000004B 58                      	pop rax			; get n in ax
+    55 0000004C 6689C3                  	mov bx, ax		; mov n into bx
+    56 0000004F E8ACFFFFFF              	call recFac		; get n! into dx
+    57 00000054 6689D0                  	mov ax, dx		; get n! into ax
+    58 00000057 66F7F1                  	div cx			; get n!/(k!*(n-k)!) into ax
+    59 0000005A 59                      	pop rcx			; restore rcx
+    60                                  	
+    61 0000005B C3                      ret
+    62                                  
+    63                                  _start:                         ;tells linker entry point
+    64 0000005C 66B80400                        mov ax, 4
+    65 00000060 66BB0300                	mov bx, 3
+    66 00000064 E8C1FFFFFF                      call doBinominal
+    67 00000069 EB00                            jmp endScript
+    68                                  
+    69                                  endScript:
+    70 0000006B B801000000              	mov rax,1 		; code for exit syscall
+    71 00000070 BB00000000              	mov rbx,0 		; return a code of zero
+    72 00000075 CD80                    	int 80H	  		; make kernel call
+    73                                  	
