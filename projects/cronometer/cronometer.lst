@@ -1,0 +1,75 @@
+     1                                  ; Source name 	  : cronometer.asm
+     2                                  ; Executable name : cronometer
+     3                                  ; Version	  : 1.0
+     4                                  ; Created date	  : 2018-02-01 13:01:53
+     5                                  ; Last update	  : 2018-02-01 13:01:53
+     6                                  ; Author:	  : adrianberger
+     7                                  ; Description	  : 
+     8                                  
+     9                                  section .data			; declaring initialized data or constants
+    10                                  
+    11                                  section .bss			; declaring variables here
+    12                                  
+    13                                  section .text			; actual code section
+    14                                  	global _start 		; must be declared for linker
+    15                                  
+    16                                  _start:				;tells linker entry point
+    17 00000000 66B8FB2E                	mov ax, 000010111011111011b
+    18 00000004 E80C000000              	call addSecond
+    19 00000009 B804000000              	mov eax, 04
+    20 0000000E E802000000              	call addSecond 
+    21 00000013 EB6B                    	jmp endScript	
+    22                                  
+    23                                  addSecond:
+    24 00000015 4150                    	push r8			; seconds
+    25 00000017 4151                    	push r9			; minutes
+    26 00000019 4152                    	push r10		; hours
+    27                                  	
+    28 0000001B 4989C0                  	mov r8, rax
+    29 0000001E 4989C1                  	mov r9, rax
+    30 00000021 4989C2                  	mov r10, rax
+    31                                   
+    32 00000024 4983E03F                	and r8, 63
+    33 00000028 49C1E906                	shr r9, 6
+    34 0000002C 4983E13F                	and r9, 63
+    35 00000030 49C1EA0C                	shr r10, 12
+    36 00000034 4983E21F                	and r10, 31
+    37                                  
+    38                                  ; add second
+    39 00000038 49FFC0                  	inc r8
+    40 0000003B 4983F83C                	cmp r8, 60
+    41 0000003F 7224                    	jb .done
+    42                                  
+    43                                  ; add minute
+    44 00000041 41B800000000            	mov r8, 0
+    45 00000047 49FFC1                  	inc r9
+    46 0000004A 4983F93C                	cmp r9, 60
+    47 0000004E 7215                    	jb .done
+    48                                  
+    49                                  ; add hour
+    50 00000050 41B900000000            	mov r9, 0
+    51 00000056 49FFC2                  	inc r10
+    52 00000059 4983FA18                	cmp r10, 24
+    53 0000005D 7206                    	jb .done
+    54                                  
+    55                                  ; set chronometer to zero
+    56 0000005F 41BA00000000            	mov r10, 0
+    57                                  
+    58                                  .done:
+    59 00000065 49C1E106                	shl r9, 6
+    60 00000069 49C1E20C                	shl r10, 12
+    61 0000006D 4831C0                  	xor rax, rax
+    62 00000070 4C09C0                  	or rax, r8
+    63 00000073 4C09C8                  	or rax, r9
+    64 00000076 4C09D0                  	or rax, r10
+    65                                  	
+    66 00000079 415A                    	pop r10
+    67 0000007B 4159                    	pop r9
+    68 0000007D 4158                    	pop r8
+    69 0000007F C3                      ret
+    70                                  
+    71                                  endScript:
+    72 00000080 B801000000              	mov rax,1 		; code for exit syscall
+    73 00000085 BB00000000              	mov rbx,0 		; return a code of zero
+    74 0000008A CD80                    	int 80H	  		; make kernel call
+    75                                  	

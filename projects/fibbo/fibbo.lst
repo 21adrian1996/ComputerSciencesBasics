@@ -1,0 +1,46 @@
+     1                                  ; Source name 	  : fibbo.asm
+     2                                  ; Executable name : fibbo
+     3                                  ; Version	  : 1.0
+     4                                  ; Created date	  : 2018-02-01 10:55:38
+     5                                  ; Last update	  : 2018-02-01 10:55:38
+     6                                  ; Author:	  : adrianberger
+     7                                  ; Description	  : 
+     8                                  
+     9                                  section .data			; declaring initialized data or constants
+    10                                  
+    11                                  section .bss			; declaring variables here
+    12                                  
+    13                                  section .text			; actual code section
+    14                                  	global _start 		; must be declared for linker
+    15                                  
+    16                                  _start:				; tells the linker the entry point
+    17 00000000 B80A000000              	mov eax, 10	 	; eax is the limit
+    18 00000005 EB00                    	jmp fibo
+    19                                  ; IN: eax: which fibbo number should be found
+    20                                  ; OUT: ebx: the fibbo number
+    21                                  fibo:
+    22 00000007 50                      	push rax
+    23 00000008 51                      	push rcx
+    24 00000009 BB00000000              	mov ebx, 0		; first fibo number
+    25 0000000E B901000000              	mov ecx, 1		; second fibo number		
+    26 00000013 EB00                    	jmp doRec 
+    27                                  ; IN: ebx: current fibo, ecx: last fibo
+    28                                  ; OUT: ebx: next fibo, ecx: current fibo
+    29                                  doRec:
+    30 00000015 83F800                  	cmp eax, 0		; if counter is 0
+    31 00000018 7408                    	je endFibo		; we have reached our fibo number
+    32 0000001A 53                      	push rbx		; store last fibo
+    33 0000001B 01CB                    	add ebx, ecx		; calculate next fibo
+    34 0000001D 59                      	pop rcx			; store last fibo in rcx
+    35 0000001E FFC8                    	dec eax			; decrement the counter
+    36 00000020 EBF3                            jmp doRec
+    37                                  endFibo:
+    38 00000022 59                      	pop rcx
+    39 00000023 58                      	pop rax
+    40 00000024 EB00                    	jmp endScript
+    41                                  
+    42                                  endScript:
+    43 00000026 B801000000              	mov rax,1 		; code for exit syscall
+    44 0000002B BB00000000              	mov rbx,0 		; return a code of zero
+    45 00000030 CD80                    	int 80H	  		; make kernel call
+    46                                  	
